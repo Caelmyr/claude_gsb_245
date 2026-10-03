@@ -109,7 +109,21 @@ def main():
 
     print("\n== 图像分割 ==")
     r = segmentation.segment(work, {"method": "color", "colors": 5})
-    print(f"  区域数: {r['region_count']}  覆盖率={r['coverage']}")
+    print(f"  区域数: {r['region_count']}  覆盖率={r['coverage']}  背景占比={r['background_coverage']}")
+
+    # 白底 + 纯色前景：背景应被剔除（不占编号/覆盖率），纯色前景保留
+    bg_img = Image.new("RGB", (320, 240), (255, 255, 255))
+    ImageDraw.Draw(bg_img).ellipse([110, 70, 210, 170], fill=(220, 30, 30))
+    r = segmentation.segment(bg_img, {"method": "color", "colors": 4})
+    print(f"  白底红圆: 区域数={r['region_count']} 覆盖率={r['coverage']} 背景占比={r['background_coverage']} (背景应被剔除)")
+    r = segmentation.segment(bg_img, {"method": "color", "colors": 4, "remove_bg": False})
+    print(f"  同图 remove_bg=False: 区域数={r['region_count']} 覆盖率={r['coverage']} (背景计回，兼容旧行为)")
+
+    # 蓝底 + 白色前景：白色物体不是背景色，不能被误删
+    fg_img = Image.new("RGB", (320, 240), (40, 80, 200))
+    ImageDraw.Draw(fg_img).rectangle([120, 80, 200, 160], fill=(255, 255, 255))
+    r = segmentation.segment(fg_img, {"method": "color", "colors": 4})
+    print(f"  蓝底白块: 区域数={r['region_count']} 覆盖率={r['coverage']} 背景占比={r['background_coverage']} (白色前景应保留)")
 
     print("\n== 风格迁移 ==")
     for s in ("oil", "sketch", "cyber"):

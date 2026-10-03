@@ -20,6 +20,7 @@ window.Views.segmentation = (function () {
               <div class="field"><label>阈值（threshold 方法）</label><input type="range" id="sg-value" min="0" max="255" value="127"></div>
               <div class="field"><label>局部块大小（region 方法）</label><input type="range" id="sg-block" min="3" max="31" step="2" value="15"></div>
               <div class="field"><label>颜色数（color 方法）</label><input type="range" id="sg-colors" min="2" max="12" value="6"></div>
+              <div class="field"><label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="checkbox" id="sg-remove-bg" checked> 剔除背景（color 方法：主导画面边缘的纯色判为背景）</label></div>
               <div class="field"><label>叠加透明度</label><input type="range" id="sg-alpha" min="0" max="1" step="0.05" value="0.45"></div>
               <button class="btn btn-primary" id="sg-run">执行分割</button>
             </div>
@@ -44,11 +45,14 @@ window.Views.segmentation = (function () {
           block: Number(el.querySelector("#sg-block").value),
           colors: Number(el.querySelector("#sg-colors").value),
           alpha: Number(el.querySelector("#sg-alpha").value),
+          remove_bg: el.querySelector("#sg-remove-bg").checked,
         });
+        const bgNote = r.background_coverage > 0
+          ? ` · 背景 ${(r.background_coverage * 100).toFixed(1)}%（已剔除，不计入区域）` : "";
         el.querySelector("#sg-result").innerHTML =
-          `<img src="/api/results/${r.result_id}/file?t=${Date.now()}"><div class="caption">${r.region_count} 个区域 · 覆盖率 ${(r.coverage * 100).toFixed(1)}%</div>`;
+          `<img src="/api/results/${r.result_id}/file?t=${Date.now()}"><div class="caption">${r.region_count} 个区域 · 覆盖率 ${(r.coverage * 100).toFixed(1)}%${bgNote}</div>`;
         el.querySelector("#sg-stats").innerHTML =
-          `<div style="margin-bottom:6px">区域数：<strong>${r.region_count}</strong> · 覆盖率：<strong>${(r.coverage * 100).toFixed(1)}%</strong></div>` +
+          `<div style="margin-bottom:6px">区域数：<strong>${r.region_count}</strong> · 覆盖率：<strong>${(r.coverage * 100).toFixed(1)}%</strong>${bgNote}</div>` +
           (r.regions || []).slice(0, 12).map((rg) =>
             `<div>▸ 区域 #${rg.id} <span class="dim">面积 ${rg.area}px · 主色 rgb(${rg.mean_color.map(Math.round).join(",")})</span></div>`).join("");
       };

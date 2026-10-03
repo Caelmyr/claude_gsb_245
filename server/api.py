@@ -430,7 +430,8 @@ def run_segment():
     data = request.get_json(silent=True) or {}
     params = {"method": data.get("method", "threshold"),
               "value": data.get("value"), "block": data.get("block", 15),
-              "colors": data.get("colors", 6), "alpha": data.get("alpha", 0.45)}
+              "colors": data.get("colors", 6), "alpha": data.get("alpha", 0.45),
+              "remove_bg": data.get("remove_bg", True)}
     res, err = _run_op(data.get("image_id"), "segment", params, segmentation.segment)
     if err:
         return err[0], err[1]

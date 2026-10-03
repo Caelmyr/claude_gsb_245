@@ -199,6 +199,7 @@ NODES["segment"] = _node(
      _range("value", "阈值", 0, 255, 1, 127),
      _range("block", "局部块", 3, 31, 2, 15),
      _range("colors", "颜色数", 2, 12, 1, 6),
+     _bool("remove_bg", "剔除背景", True, "颜色聚类：主导画面边缘的纯色判为背景，不计入区域"),
      _range("alpha", "叠加透明度", 0, 1, 0.05, 0.45)],
     _segmentation.segment, desc="阈值/区域/颜色分割")
 
