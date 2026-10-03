@@ -48,7 +48,9 @@ window.Views.segmentation = (function () {
         el.querySelector("#sg-result").innerHTML =
           `<img src="/api/results/${r.result_id}/file?t=${Date.now()}"><div class="caption">${r.region_count} 个区域 · 覆盖率 ${(r.coverage * 100).toFixed(1)}%</div>`;
         el.querySelector("#sg-stats").innerHTML =
-          `<div style="margin-bottom:6px">区域数：<strong>${r.region_count}</strong> · 覆盖率：<strong>${(r.coverage * 100).toFixed(1)}%</strong></div>` +
+          `<div style="margin-bottom:6px">区域数：<strong>${r.region_count}</strong> · 覆盖率：<strong>${(r.coverage * 100).toFixed(1)}%</strong>` +
+          (r.background_coverage != null ? ` · 背景占比：<strong>${(r.background_coverage * 100).toFixed(1)}%</strong>` : "") +
+          `</div>` +
           (r.regions || []).slice(0, 12).map((rg) =>
             `<div>▸ 区域 #${rg.id} <span class="dim">面积 ${rg.area}px · 主色 rgb(${rg.mean_color.map(Math.round).join(",")})</span></div>`).join("");
       };
